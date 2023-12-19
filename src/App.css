@@ -13,6 +13,21 @@
   }
 }
 
+.square {
+  height: 100px;
+  width: 100px;
+  background-color: #fff;
+  border: 1px solid #999;
+  float: left;
+  /* Center Text */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  vertical-align: middle;
+  font-size: xx-large;
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
