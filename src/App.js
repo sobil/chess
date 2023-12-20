@@ -116,6 +116,11 @@ const validateRookMove = (chessBoard, from, to) => {
 }
 
 const validateKnightMove = (chessBoard, from, to) => {
+  const forwardVector = (to.row - from.row)
+  const sideVector = to.col - from.col;
+  if (Math.abs(forwardVector) === 2 && Math.abs(sideVector) === 1) return true;
+  if (Math.abs(forwardVector) === 1 && Math.abs(sideVector) === 2) return true;
+  return false;
 }
 
 const validateBishopMove = (chessBoard, from, to) => {
