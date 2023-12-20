@@ -33,17 +33,17 @@ const validateMove = (chessBoard, selectedSquare, targetSquare) => {
   let from = getPiece(chessBoard, selectedSquare);
   const to = getPiece(chessBoard, targetSquare);
   if (from.pieceColour === to.pieceColour) {
-    alert("Cannot kill your own piece!");
+    // alert("Cannot kill your own piece!");
     return chessBoard;
   }
   switch (from.piece) {
     case "":
-      alert("No piece selected!");
+      // alert("No piece selected!");
       return chessBoard;
     case "♟":
     case "♙":
       if (!validatePawnMove(chessBoard, from, to)) {
-        alert("Invalid move for pawn!");
+        // alert("Invalid move for pawn!");
         return chessBoard;
       }
       if (to.row === 0 || to.row === 7)
@@ -52,35 +52,35 @@ const validateMove = (chessBoard, selectedSquare, targetSquare) => {
     case "♜":
     case "♖":
       if (!validateRookMove(chessBoard, from, to)) {
-        alert("Invalid move for rook!");
+        // alert("Invalid move for rook!");
         return chessBoard;
       }
       break;
     case "♞":
     case "♘":
       if (!validateKnightMove(chessBoard, from, to)) {
-        alert("Invalid move for knight!");
+        // alert("Invalid move for knight!");
         return chessBoard;
       }
       break;
     case "♝":
     case "♗":
       if (!validateBishopMove(chessBoard, from, to)) {
-        alert("Invalid move for bishop!");
+        // alert("Invalid move for bishop!");
         return chessBoard;
       }
       break;
     case "♛":
     case "♕":
       if (!validateQueenMove(chessBoard, from, to)) {
-        alert("Invalid move for queen!");
+        // alert("Invalid move for queen!");
         return chessBoard;
       }
       break;
     case "♚":
     case "♔":
       if (!validateKingMove(chessBoard, from, to)) {
-        alert("Invalid move for king!");
+        // alert("Invalid move for king!");
         return chessBoard;
       }
       break;
@@ -116,7 +116,6 @@ const validateRookMove = (chessBoard, from, to) => {
 }
 
 const validateKnightMove = (chessBoard, from, to) => {
-  return true;
 }
 
 const validateBishopMove = (chessBoard, from, to) => {
@@ -130,13 +129,33 @@ const validateBishopMove = (chessBoard, from, to) => {
 }
 
 const validateQueenMove = (chessBoard, from, to) => {
-  return true;
+  return false;
 }
 
 const validateKingMove = (chessBoard, from, to) => {
+  if (Math.abs(to.row - from.row) > 1 || Math.abs(to.col - from.col) > 1) return false;
+  // if (positionInThreat(chessBoard, from, to)) return false;
   return true;
 }
 
+const positionInThreat = (chessBoard, from, to) => {
+  chessBoard[to.row][to.col] = chessBoard[from.row][from.col];
+  const toPosition = to.row * 8 + to.col;
+  for (let i = 0; i < chessBoard.length ; i++) {
+    for (let j = 0; j < chessBoard[0].length ; j++) {
+      const piece = chessBoard[i][j];
+      if( piece === "") continue;
+      const thisPosition = i*8 + j;
+      const thisPiece = getPiece(chessBoard, thisPosition);
+      if (thisPiece.pieceColour === from.pieceColour) continue;
+      if (validateMove(chessBoard, thisPosition, toPosition)[to.row][to.col] !== from.piece) {
+        console.log("Threat from " + thisPiece.piece + " at " + thisPosition);
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 const SquareBox = (props) => {
   return (
@@ -196,7 +215,6 @@ const App = () => {
             {ChessBoard(chessBoard, clickAction, selectedSquare)}
           </tbody>
         </table>
-
       </header>
     </div>
   );
