@@ -2,7 +2,7 @@
 import './App.css';
 import { useState } from 'react';
 
-const InitialChessBoard = [
+const getInitialChessBoard = () => [
   ["♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"],
   ["♟", "♟", "♟", "♟", "♟", "♟", "♟", "♟"],
   new Array(8).fill(""),
@@ -13,6 +13,33 @@ const InitialChessBoard = [
   ["♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"]
 ];
 
+const getPiece = (chessBoard, square) => {
+  const row = Math.floor(square / 8);
+  const col = square % 8;
+  return {
+    "piece": chessBoard[row][col],
+    "row": row,
+    "col": col,
+    "pieceColour": chessBoard[row][col] === chessBoard[row][col].toUpperCase() ? "white" : "black"
+  };
+}
+
+const validateMove = (chessBoard, selectedSquare, targetSquare) => {
+  const from = getPiece(chessBoard, selectedSquare);
+  const to = getPiece(chessBoard, targetSquare);
+  if (from === "") {
+    alert("No piece selected!");
+    return chessBoard;
+  }
+  if (to !== "") {
+    chessBoard[to.row][to.col] = from.piece;
+    chessBoard[from.row][from.col] = "";
+    // console.log("movingPiece", from.piece, "to", targetSquare , "from", selectedSquare);
+    return chessBoard;
+  }
+  alert("Ambitious move!");
+  return chessBoard
+}
 
 const SquareBox = (props) => {
   return (
@@ -29,7 +56,7 @@ const ChessBoard = (layout = [], clickAction, selectedSquare) => {
           const defaultColor = (i + j) % 2 === 0 ? "black" : "grey";
           const color = selectedSquare === square ? "red" : defaultColor;
           return (
-            <td key={square} onClick={()=>clickAction(square)}>
+            <td key={square} onClick={() => clickAction(square)}>
               <SquareBox color={color} text={cell} squareNumber={square} />
             </td>
           )
@@ -41,22 +68,35 @@ const ChessBoard = (layout = [], clickAction, selectedSquare) => {
 }
 
 const App = () => {
-  let [chessBoard, updateChessBoard] = useState(
-    InitialChessBoard)
+  let [chessBoard, setChessBoard] = useState(
+    getInitialChessBoard())
+  const updateChessBoard = (chessBoard) => {
+    console.log("Resetting Chess Board");
+    setChessBoard(chessBoard);
+  }
   let [selectedSquare, selectSquare] = useState(-1);
   const clickAction = (square) => {
     if (square === selectedSquare) {
+      // Deselect the square
       selectSquare(-1);
     } else {
-      selectSquare(square);
+      if (selectedSquare === -1) {
+        // Select the square
+        selectSquare(square);
+      }
+      else {
+        setChessBoard(validateMove(chessBoard, selectedSquare, square));
+        selectSquare(-1);
+      }
     }
   }
   return (
     <div className="App">
       <header className="App-header">
+        <button onClick={(e) => updateChessBoard(getInitialChessBoard())}>Reset</button>
         <table>
           <tbody>
-            {ChessBoard(chessBoard,clickAction,selectedSquare,updateChessBoard)}
+            {ChessBoard(chessBoard, clickAction, selectedSquare)}
           </tbody>
         </table>
 
