@@ -13,14 +13,17 @@ const getInitialChessBoard = () => [
   ["♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"]
 ];
 
+const whitePieces = getInitialChessBoard()[0].concat(getInitialChessBoard()[1]);
+
 const getPiece = (chessBoard, square) => {
   const row = Math.floor(square / 8);
   const col = square % 8;
+  const piece = chessBoard[row][col];
   return {
-    "piece": chessBoard[row][col],
+    "piece": piece,
     "row": row,
     "col": col,
-    "pieceColour": chessBoard[row][col] === chessBoard[row][col].toUpperCase() ? "white" : "black"
+    "pieceColour": piece === ""  ? "" : whitePieces.indexOf(chessBoard[row][col]) > 0 ? "white" : "black"
   };
 }
 
