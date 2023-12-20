@@ -120,6 +120,12 @@ const validateKnightMove = (chessBoard, from, to) => {
 }
 
 const validateBishopMove = (chessBoard, from, to) => {
+  const forwardVector = (to.row - from.row)
+  const sideVector = to.col - from.col;
+  if (Math.abs(forwardVector) !== Math.abs(sideVector)) return false;
+  for (let i = 0;  i !== Math.abs(forwardVector); i++) {
+   if (chessBoard[from.row + (forwardVector > 0 ? i : -i)][from.col + (sideVector > 0 ? i : -i)] !== "" && i !== 0) return false;
+  }
   return true;
 }
 
