@@ -30,7 +30,7 @@ const getPiece = (chessBoard, square) => {
 }
 
 const validateMove = (chessBoard, selectedSquare, targetSquare) => {
-  const from = getPiece(chessBoard, selectedSquare);
+  let from = getPiece(chessBoard, selectedSquare);
   const to = getPiece(chessBoard, targetSquare);
   if (from.pieceColour === to.pieceColour) {
     alert("Cannot kill your own piece!");
@@ -46,6 +46,8 @@ const validateMove = (chessBoard, selectedSquare, targetSquare) => {
         alert("Invalid move for pawn!");
         return chessBoard;
       }
+      if (to.row === 0 || to.row === 7)
+        from.piece = from.pieceColour === "white" ? "♛" : "♕";
       break
     case "♜":
     case "♖":
