@@ -2,6 +2,18 @@
 import './App.css';
 import { useState } from 'react';
 
+const InitialChessBoard = [
+  ["♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"],
+  ["♟", "♟", "♟", "♟", "♟", "♟", "♟", "♟"],
+  new Array(8).fill(""),
+  new Array(8).fill(""),
+  new Array(8).fill(""),
+  new Array(8).fill(""),
+  ["♙", "♙", "♙", "♙", "♙", "♙", "♙", "♙"],
+  ["♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"]
+];
+
+
 const SquareBox = (props) => {
   return (
     <div className="square" style={{ backgroundColor: props.color }}>{props.text}</div>
@@ -30,24 +42,21 @@ const ChessBoard = (layout = [], clickAction, selectedSquare) => {
 
 const App = () => {
   let [chessBoard, updateChessBoard] = useState(
-    [
-      ["♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"],
-      ["♟", "♟", "♟", "♟", "♟", "♟", "♟", "♟"],
-      new Array(8).fill(""),
-      new Array(8).fill(""),
-      new Array(8).fill(""),
-      new Array(8).fill(""),
-      ["♙", "♙", "♙", "♙", "♙", "♙", "♙", "♙"],
-      ["♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"]
-    ])
+    InitialChessBoard)
   let [selectedSquare, selectSquare] = useState(-1);
-
+  const clickAction = (square) => {
+    if (square === selectedSquare) {
+      selectSquare(-1);
+    } else {
+      selectSquare(square);
+    }
+  }
   return (
     <div className="App">
       <header className="App-header">
         <table>
           <tbody>
-            {ChessBoard(chessBoard,selectSquare,selectedSquare,updateChessBoard)}
+            {ChessBoard(chessBoard,clickAction,selectedSquare,updateChessBoard)}
           </tbody>
         </table>
 
