@@ -35,9 +35,12 @@ const validateMove = (chessBoard, selectedSquare, targetSquare) => {
     return chessBoard;
   }
   if (to !== "") {
+    if (from.pieceColour === to.pieceColour) {
+      alert("Cannot kill your own piece!");
+      return chessBoard;
+    }
     chessBoard[to.row][to.col] = from.piece;
     chessBoard[from.row][from.col] = "";
-    // console.log("movingPiece", from.piece, "to", targetSquare , "from", selectedSquare);
     return chessBoard;
   }
   alert("Ambitious move!");
