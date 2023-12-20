@@ -14,6 +14,8 @@ const getInitialChessBoard = () => [
 ];
 
 const whitePieces = getInitialChessBoard()[0].concat(getInitialChessBoard()[1]);
+const whiteDirection = 1;
+
 
 const getPiece = (chessBoard, square) => {
   const row = Math.floor(square / 8);
@@ -23,29 +25,100 @@ const getPiece = (chessBoard, square) => {
     "piece": piece,
     "row": row,
     "col": col,
-    "pieceColour": piece === ""  ? "" : whitePieces.indexOf(chessBoard[row][col]) > 0 ? "white" : "black"
+    "pieceColour": piece === "" ? "" : whitePieces.indexOf(chessBoard[row][col]) > 0 ? "white" : "black"
   };
 }
 
 const validateMove = (chessBoard, selectedSquare, targetSquare) => {
   const from = getPiece(chessBoard, selectedSquare);
   const to = getPiece(chessBoard, targetSquare);
-  if (from === "") {
-    alert("No piece selected!");
+  if (from.pieceColour === to.pieceColour) {
+    alert("Cannot kill your own piece!");
     return chessBoard;
   }
-  if (to !== "") {
-    if (from.pieceColour === to.pieceColour) {
-      alert("Cannot kill your own piece!");
+  switch (from.piece) {
+    case "":
+      alert("No piece selected!");
       return chessBoard;
-    }
-    chessBoard[to.row][to.col] = from.piece;
-    chessBoard[from.row][from.col] = "";
-    return chessBoard;
+    case "♟":
+    case "♙":
+      if (!validatePawnMove(chessBoard, from, to)) {
+        alert("Invalid move for pawn!");
+        return chessBoard;
+      }
+      break
+    case "♜":
+    case "♖":
+      if (!validateRookMove(chessBoard, from, to)) {
+        alert("Invalid move for rook!");
+        return chessBoard;
+      }
+      break;
+    case "♞":
+    case "♘":
+      if (!validateKnightMove(chessBoard, from, to)) {
+        alert("Invalid move for knight!");
+        return chessBoard;
+      }
+      break;
+    case "♝":
+    case "♗":
+      if (!validateBishopMove(chessBoard, from, to)) {
+        alert("Invalid move for bishop!");
+        return chessBoard;
+      }
+      break;
+    case "♛":
+    case "♕":
+      if (!validateQueenMove(chessBoard, from, to)) {
+        alert("Invalid move for queen!");
+        return chessBoard;
+      }
+      break;
+    case "♚":
+    case "♔":
+      if (!validateKingMove(chessBoard, from, to)) {
+        alert("Invalid move for king!");
+        return chessBoard;
+      }
+      break;
+    default:
+      break;
   }
-  alert("Ambitious move!");
+  chessBoard[to.row][to.col] = from.piece;
+  chessBoard[from.row][from.col] = "";
   return chessBoard
 }
+
+const validatePawnMove = (chessBoard, from, to) => {
+  const forwardVector = (to.row - from.row) * (from.pieceColour === "white" ? whiteDirection : whiteDirection * -1);
+  const sideVector = to.col - from.col;
+  if (forwardVector === 1 && to.piece === "" && sideVector === 0) return true;
+  if (getInitialChessBoard()[from.row][from.col] === chessBoard[from.row][from.col] && forwardVector === 2 && sideVector === 0 && to.piece === "") return true;
+  if (forwardVector === 1 && (sideVector === 1 || sideVector === -1) && to.piece !== "") return true
+  return false;
+}
+
+const validateRookMove = (chessBoard, from, to) => {
+  return true;
+}
+
+const validateKnightMove = (chessBoard, from, to) => {
+  return true;
+}
+
+const validateBishopMove = (chessBoard, from, to) => {
+  return true;
+}
+
+const validateQueenMove = (chessBoard, from, to) => {
+  return true;
+}
+
+const validateKingMove = (chessBoard, from, to) => {
+  return true;
+}
+
 
 const SquareBox = (props) => {
   return (
