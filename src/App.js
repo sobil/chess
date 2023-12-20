@@ -8,14 +8,14 @@ const SquareBox = (props) => {
   );
 }
 
-const ChessBoard = (layout = [], clickAction, selectedPiece) => {
+const ChessBoard = (layout = [], clickAction, selectedSquare) => {
   return layout.map((row, i) => {
     return (
       <tr key={i}>
         {row.map((cell, j) => {
           const square = i * row.length + j;
           const defaultColor = (i + j) % 2 === 0 ? "black" : "grey";
-          const color = selectedPiece === square ? "red" : defaultColor;
+          const color = selectedSquare === square ? "red" : defaultColor;
           return (
             <td key={square} onClick={()=>clickAction(square)}>
               <SquareBox color={color} text={cell} squareNumber={square} />
@@ -40,14 +40,14 @@ const App = () => {
       ["♙", "♙", "♙", "♙", "♙", "♙", "♙", "♙"],
       ["♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"]
     ])
-  let [selectedPiece, selectSquare] = useState(-1);
+  let [selectedSquare, selectSquare] = useState(-1);
 
   return (
     <div className="App">
       <header className="App-header">
         <table>
           <tbody>
-            {ChessBoard(chessBoard,selectSquare,selectedPiece,updateChessBoard)}
+            {ChessBoard(chessBoard,selectSquare,selectedSquare,updateChessBoard)}
           </tbody>
         </table>
 
