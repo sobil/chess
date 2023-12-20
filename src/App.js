@@ -25,7 +25,7 @@ const getPiece = (chessBoard, square) => {
     "piece": piece,
     "row": row,
     "col": col,
-    "pieceColour": piece === "" ? "" : whitePieces.indexOf(chessBoard[row][col]) > 0 ? "white" : "black"
+    "pieceColour": piece === "" ? "" : whitePieces.indexOf(chessBoard[row][col]) > -1 ? "white" : "black"
   };
 }
 
@@ -102,6 +102,16 @@ const validatePawnMove = (chessBoard, from, to) => {
 }
 
 const validateRookMove = (chessBoard, from, to) => {
+  // Check if the move is horizontal or vertical
+  const forwardVector = (to.row - from.row)
+  const sideVector = to.col - from.col;
+  if (!(forwardVector === 0 || sideVector === 0)) return false;
+  for (let i = 0;  i !== forwardVector; forwardVector > 0 ? i++ : i--) {
+    if (chessBoard[from.row + i][from.col] !== "" && i !== 0) return false;
+  }
+  for (let i = 0;  i !== sideVector; sideVector > 0 ? i++ : i--) {
+    if (chessBoard[from.row][from.col + i] !== "" && i !== 0) return false;
+  }
   return true;
 }
 
