@@ -152,6 +152,8 @@ const validateBishopMove = (chessBoard, from, to) => {
 }
 
 const validateQueenMove = (chessBoard, from, to) => {
+  if (validateRookMove(chessBoard, from, to)) return true;
+  if (validateBishopMove(chessBoard, from, to)) return true;
   return false;
 }
 
