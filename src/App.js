@@ -22,6 +22,7 @@ const getPiece = (chessBoard, square) => {
   const col = square % 8;
   const piece = chessBoard[row][col];
   return {
+    "position": square,
     "piece": piece,
     "row": row,
     "col": col,
@@ -29,7 +30,19 @@ const getPiece = (chessBoard, square) => {
   };
 }
 
-const validateMove = (chessBoard, selectedSquare, targetSquare) => {
+const findPieces = (chessBoard, piece) => {
+  let pieces = [];
+  for (let i = 0; i < chessBoard.length; i++) {
+    for (let j = 0; j < chessBoard[0].length; j++) {
+      if (chessBoard[i][j] === piece) {
+        pieces.push(getPiece(chessBoard, i * chessBoard.length + j));
+      }
+    }
+  }
+  return pieces;
+}
+
+const validateMove = (chessBoard, selectedSquare, targetSquare, testCheck = true) => {
   let from = getPiece(chessBoard, selectedSquare);
   const to = getPiece(chessBoard, targetSquare);
   if (from.pieceColour === to.pieceColour) {
@@ -80,16 +93,21 @@ const validateMove = (chessBoard, selectedSquare, targetSquare) => {
     case "♚":
     case "♔":
       if (!validateKingMove(chessBoard, from, to)) {
-        // alert("Invalid move for king!");
         return chessBoard;
       }
       break;
     default:
       break;
   }
+  if (testCheck) {
+    const result = resultsInCheck(chessBoard.map((row) => [...row]), from, to);
+    console.log("testCheck", result);
+    if (result) return chessBoard;
+  }
+
   chessBoard[to.row][to.col] = from.piece;
   chessBoard[from.row][from.col] = "";
-  return chessBoard
+  return chessBoard.map((row) => [...row]);
 }
 
 const validatePawnMove = (chessBoard, from, to) => {
@@ -106,10 +124,10 @@ const validateRookMove = (chessBoard, from, to) => {
   const forwardVector = (to.row - from.row)
   const sideVector = to.col - from.col;
   if (!(forwardVector === 0 || sideVector === 0)) return false;
-  for (let i = 0;  i !== forwardVector; forwardVector > 0 ? i++ : i--) {
+  for (let i = 0; i !== forwardVector; forwardVector > 0 ? i++ : i--) {
     if (chessBoard[from.row + i][from.col] !== "" && i !== 0) return false;
   }
-  for (let i = 0;  i !== sideVector; sideVector > 0 ? i++ : i--) {
+  for (let i = 0; i !== sideVector; sideVector > 0 ? i++ : i--) {
     if (chessBoard[from.row][from.col + i] !== "" && i !== 0) return false;
   }
   return true;
@@ -127,8 +145,8 @@ const validateBishopMove = (chessBoard, from, to) => {
   const forwardVector = (to.row - from.row)
   const sideVector = to.col - from.col;
   if (Math.abs(forwardVector) !== Math.abs(sideVector)) return false;
-  for (let i = 0;  i !== Math.abs(forwardVector); i++) {
-   if (chessBoard[from.row + (forwardVector > 0 ? i : -i)][from.col + (sideVector > 0 ? i : -i)] !== "" && i !== 0) return false;
+  for (let i = 0; i !== Math.abs(forwardVector); i++) {
+    if (chessBoard[from.row + (forwardVector > 0 ? i : -i)][from.col + (sideVector > 0 ? i : -i)] !== "" && i !== 0) return false;
   }
   return true;
 }
@@ -139,22 +157,20 @@ const validateQueenMove = (chessBoard, from, to) => {
 
 const validateKingMove = (chessBoard, from, to) => {
   if (Math.abs(to.row - from.row) > 1 || Math.abs(to.col - from.col) > 1) return false;
-  // if (positionInThreat(chessBoard, from, to)) return false;
   return true;
 }
 
-const positionInThreat = (chessBoard, from, to) => {
-  chessBoard[to.row][to.col] = chessBoard[from.row][from.col];
-  const toPosition = to.row * 8 + to.col;
-  for (let i = 0; i < chessBoard.length ; i++) {
-    for (let j = 0; j < chessBoard[0].length ; j++) {
-      const piece = chessBoard[i][j];
-      if( piece === "") continue;
-      const thisPosition = i*8 + j;
-      const thisPiece = getPiece(chessBoard, thisPosition);
-      if (thisPiece.pieceColour === from.pieceColour) continue;
-      if (validateMove(chessBoard, thisPosition, toPosition)[to.row][to.col] !== from.piece) {
-        console.log("Threat from " + thisPiece.piece + " at " + thisPosition);
+const resultsInCheck = (chessBoard, from, to) => {
+  chessBoard[from.row][from.col] = "";
+  chessBoard[to.row][to.col] = from.piece;
+  const king = findPieces(chessBoard, from.pieceColour === "white" ? "♚" : "♔")[0];
+  for (let i = 0; i < chessBoard.length; i++) {
+    for (let j = 0; j < chessBoard[0].length; j++) {
+      if (chessBoard[i][j] === "") continue;
+      if (getPiece(chessBoard, i * chessBoard.length + j).pieceColour === king.pieceColour) continue;
+      const result = validateMove(chessBoard.map((row) => [...row]), i * chessBoard.length + j, king.position, false);
+      if (result[king.row][king.col] !== king.piece) {
+        console.log("Moving " + chessBoard[i][j] + " from " + i + "," + j + " to " + king.row + "," + king.col + " results in check!");
         return true;
       }
     }
@@ -206,7 +222,7 @@ const App = () => {
         selectSquare(square);
       }
       else {
-        setChessBoard(validateMove(chessBoard, selectedSquare, square));
+        setChessBoard(validateMove(chessBoard.map((row) => [...row]), selectedSquare, square));
         selectSquare(-1);
       }
     }
