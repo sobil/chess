@@ -101,10 +101,8 @@ const validateMove = (chessBoard, selectedSquare, targetSquare, testCheck = true
   }
   if (testCheck) {
     const result = resultsInCheck(chessBoard.map((row) => [...row]), from, to);
-    console.log("testCheck", result);
     if (result) return chessBoard;
   }
-
   chessBoard[to.row][to.col] = from.piece;
   chessBoard[from.row][from.col] = "";
   return chessBoard.map((row) => [...row]);
