@@ -4,7 +4,7 @@ export class Move {
   constructor(from, to) {
     this.from = from;
     this.to = to;
-    this.pieces = [];
+    this.pieceColour = this.from.pieceColour;
   }
   default() {
     return this
@@ -64,9 +64,16 @@ const findPieces = (chessBoard, piece) => {
   return pieces;
 }
 
-export const validateMove = (chessBoard, selectedSquare, targetSquare, testCheck = true, lastMove) => {
+export const validateMove = (chessBoard, selectedSquare, targetSquare, testCheck = true, history) => {
   let from = getPiece(chessBoard, selectedSquare);
   const to = getPiece(chessBoard, targetSquare);
+  const lastMove = history.slice(-1)[0]
+  console.log(lastMove)
+  console.log(from)
+  if ((lastMove.pieceColour === from.pieceColour || (!lastMove && from.pieceColour === "black"))) {
+    // alert("Cannot move twice in a row!");
+    return chessBoard;
+  }
   if (from.pieceColour === to.pieceColour) {
     // alert("Cannot kill your own piece!");
     return chessBoard;

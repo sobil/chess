@@ -53,7 +53,7 @@ const App = () => {
         selectSquare(square);
       }
       else {
-        if (updateChessBoard(validateMove(chessBoard.map((row) => [...row]), selectedSquare, square, false, moves.slice(-1)[0]))) {
+        if (updateChessBoard(validateMove(chessBoard.map((row) => [...row]), selectedSquare, square, false, moves))) {
           updateMoveHistory(moves.concat([new Move(getPiece(chessBoard,selectedSquare), getPiece(chessBoard,square))]));
         }
         selectSquare(-1);
