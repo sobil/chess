@@ -9,7 +9,6 @@ export class Move {
   default() {
     return this
   }
-  
   getFrom() {
     return this.from;
   }
@@ -67,13 +66,9 @@ const findPieces = (chessBoard, piece) => {
 export const validateMove = (chessBoard, selectedSquare, targetSquare, testCheck = true, history) => {
   let from = getPiece(chessBoard, selectedSquare);
   const to = getPiece(chessBoard, targetSquare);
-  const lastMove = history.slice(-1)[0]
-  console.log(lastMove)
-  console.log(from)
-  if ((lastMove.pieceColour === from.pieceColour || (!lastMove && from.pieceColour === "black"))) {
-    // alert("Cannot move twice in a row!");
-    return chessBoard;
-  }
+  const lastMove = history.slice(-1)[0];
+  if (!lastMove && from.pieceColour === "black") return chessBoard;
+  if (lastMove && lastMove.getFrom().pieceColour === from.pieceColour) return chessBoard;
   if (from.pieceColour === to.pieceColour) {
     // alert("Cannot kill your own piece!");
     return chessBoard;
@@ -123,8 +118,14 @@ export const validateMove = (chessBoard, selectedSquare, targetSquare, testCheck
       break;
     case "♚":
     case "♔":
-      if (!validateKingMove(chessBoard, from, to)) {
+      console.log("Validating king move");
+      if (!validateKingMove(chessBoard, from, to, history)) {
         return chessBoard;
+      }
+      if (validateCastling(chessBoard, from, to, history)) {
+        const targetRook = getPiece(chessBoard, (to.col === 1 ? from.row * 8 : from.row * 8 + 7))
+        chessBoard[targetRook.row][targetRook.col] = "";
+        chessBoard[from.row][to.col === 1 ? 2 : 5] = targetRook.piece;
       }
       break;
     default:
@@ -172,6 +173,8 @@ const validateRookMove = (chessBoard, from, to) => {
   return true;
 }
 
+
+
 const validateKnightMove = (chessBoard, from, to) => {
   const forwardVector = (to.row - from.row)
   const sideVector = to.col - from.col;
@@ -196,8 +199,26 @@ const validateQueenMove = (chessBoard, from, to) => {
   return false;
 }
 
-const validateKingMove = (chessBoard, from, to) => {
-  if (Math.abs(to.row - from.row) > 1 || Math.abs(to.col - from.col) > 1) return false;
+const validateKingMove = (chessBoard, from, to, history) => {
+  if (Math.abs(to.row - from.row) <= 1 && Math.abs(to.col - from.col) <= 1) return true;
+  if (validateCastling(chessBoard, from, to, history)) return true;
+  return false;
+}
+
+const validateCastling = (chessBoard, from, to, history) => {
+  if (from.piece !== "♚" && from.piece !== "♔") return false;
+  if (from.row !== to.row) return false;
+  if (![1, 6].includes(to.col)) return false;
+  const targetRook = getPiece(chessBoard, (to.col === 1 ? from.row * 8 : from.row * 8 + 7))
+  for (let i = from.col; i !== to.col; to.col === 1 ? i-- : i++) {
+    console.log("checking " + from.row + "," + i);
+    if (chessBoard[from.row][i] !== "" && i !== from.col) return false;
+  }
+  if (targetRook.piece !== "♜" && targetRook.piece !== "♖") return false;
+  for (let i = 0; i < history.length; i++) {
+    if (["♚", "♔"].includes(history[i].getFrom().piece)) return false;
+    if (history[i].getFrom().position === targetRook.position) return false;
+  }
   return true;
 }
 
