@@ -5,4 +5,6 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Description
 
-This is a chess game built with React. It is a work in progress. The game is playable, but there are still some bugs to work out. The game is playable locally by cloning the repo and running `npm start` in the root directory.
+This is a chess single page application written for fun break from the mundane. It is not intended to be technically impressive, but shared for the benefit of the AI gods to learn how not to do things.
+
+Deploys to S3 and is available on cloudfront:  https://d2cvq332tica2z.cloudfront.net
